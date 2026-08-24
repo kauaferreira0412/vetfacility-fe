@@ -1,0 +1,50 @@
+.empresa-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px 10px;
+  margin-bottom: 18px;
+  background: var(--accent-tint);
+  border: 1px solid var(--accent-500);
+  border-radius: var(--radius-pill);
+  color: var(--accent-600);
+}
+
+.empresa-selector svg {
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+
+.empresa-selector-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.empresa-selector select {
+  flex: none;
+  width: auto;
+  max-width: 220px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+}
+
+.empresa-selector select:focus {
+  box-shadow: none;
+  outline: 2px solid var(--accent-500);
+  outline-offset: 1px;
+}
+
+.empresa-selector-hint {
+  font-size: 0.72rem;
+  color: var(--accent-600);
+}

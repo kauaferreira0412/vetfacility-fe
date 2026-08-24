@@ -1,0 +1,90 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap");
+
+/* Este arquivo contém só o que é realmente transversal ao app inteiro: tokens de design (cores,
+   espaçamento, tipografia) e o reset base do navegador. O estilo visual de cada página vive no
+   style.css da própria pasta em src/pages, e o de cada componente reutilizável vive no style.css
+   da própria pasta em src/components. */
+
+:root {
+  --font-display: "Plus Jakarta Sans", "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Manrope", "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --bg: #f3f6f5;
+  --surface: #ffffff;
+  --surface-alt: #eef4f2;
+  --border: #e1e9e6;
+  --border-strong: #cfdbd7;
+
+  --text: #172420;
+  --text-muted: #5f716c;
+  --text-faint: #8a9a95;
+
+  --primary-950: #072623;
+  --primary-900: #0b3d3a;
+  --primary-800: #0e4d48;
+  --primary-700: #0f766e;
+  --primary-600: #14958a;
+  --primary-500: #1cb3a5;
+  --primary-tint: #e5f6f3;
+
+  --accent-600: #d97a1a;
+  --accent-500: #f2994a;
+  --accent-tint: #fdf1e2;
+
+  --danger-600: #c8304a;
+  --danger-tint: #fbe6ea;
+
+  --success-600: #1c8a52;
+  --success-tint: #e5f6ec;
+
+  --warning-600: #92620a;
+  --warning-tint: #fef3c7;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(11, 33, 30, 0.06);
+  --shadow: 0 10px 30px -12px rgba(11, 33, 30, 0.22), 0 2px 8px -2px rgba(11, 33, 30, 0.08);
+  --shadow-lg: 0 24px 60px -16px rgba(11, 33, 30, 0.35);
+
+  --sidebar-w: 260px;
+  --sidebar-w-collapsed: 78px;
+  --topbar-h: 64px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: var(--primary-tint);
+  color: var(--primary-900);
+}

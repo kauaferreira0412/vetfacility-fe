@@ -1,0 +1,10 @@
+services:
+  frontend:
+    networks:
+      - vetfacility_net
+      - webproxy
+
+networks:
+  webproxy:
+    name: webproxy
+    external: true

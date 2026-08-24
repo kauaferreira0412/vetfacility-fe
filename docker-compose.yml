@@ -1,0 +1,17 @@
+name: vetfacility-frontend
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:80"
+    networks:
+      - vetfacility_net
+
+networks:
+  vetfacility_net:
+    name: vetfacility_net
+    external: true

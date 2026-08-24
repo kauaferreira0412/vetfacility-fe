@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.vite/
+
+### Ambiente ###
+.env
+
+### IDEs ###
+.idea/
+.vscode/
+*.iml
+
+### Logs ###
+npm-debug.log*
