@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from "../Icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "../Icons";
 import { useCalendarContainer } from "./Container";
 import "./style.css";
 
@@ -26,10 +26,22 @@ export default function Calendar({
         </div>
         <div className="calendar-actions">
           <button className="btn ghost sm" onClick={onHoje}>Hoje</button>
-          <button className="btn secondary sm calendar-expand-btn" onClick={onToggleExpandir}>
-            <ChevronDownIcon width={15} height={15} className={expandido ? "rotated" : ""} />
-            {expandido ? "Retrair" : "Expandir"}
-          </button>
+          <div className="calendar-view-toggle" role="group" aria-label="Visão do calendário">
+            <button
+              type="button"
+              className={`calendar-view-btn ${!expandido ? "active" : ""}`}
+              onClick={() => expandido && onToggleExpandir()}
+            >
+              Semana
+            </button>
+            <button
+              type="button"
+              className={`calendar-view-btn ${expandido ? "active" : ""}`}
+              onClick={() => !expandido && onToggleExpandir()}
+            >
+              Mês
+            </button>
+          </div>
         </div>
       </div>
 

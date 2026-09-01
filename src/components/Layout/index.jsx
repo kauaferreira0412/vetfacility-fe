@@ -8,6 +8,7 @@ export default function Layout() {
   const {
     user,
     empresaAtiva,
+    minhaEmpresa,
     telaDePlataforma,
     bloquearPorFaltaDeEmpresa,
     menuOpen,
@@ -31,11 +32,15 @@ export default function Layout() {
 
         <div className="sidebar-brand">
           <div className="brand-mark">
-            <PawIcon width={20} height={20} />
+            {minhaEmpresa?.logotipoUrl ? (
+              <img src={minhaEmpresa.logotipoUrl} alt="Logotipo da empresa" className="brand-logo" />
+            ) : (
+              <PawIcon width={20} height={20} />
+            )}
           </div>
           <div className="brand-text">
-            <span className="brand-name">VetFacility</span>
-            <span className="brand-sub">{user?.empresaNome || (user?.root ? "Administrador da plataforma" : "Gestão para banho e tosa")}</span>
+            <span className="brand-name">{minhaEmpresa?.nome || user?.empresaNome || "VetFacility"}</span>
+            <span className="brand-sub">{user?.root ? "Administrador da plataforma" : "Gestão para banho e tosa"}</span>
           </div>
         </div>
 
@@ -83,8 +88,8 @@ export default function Layout() {
         <div className="content">
           {!telaDePlataforma && <EmpresaSelector />}
           {bloquearPorFaltaDeEmpresa ? (
-            <div className="empty-state empty-state-lg">
-              <div className="empty-state-icon">
+            <div className="empresa-nao-selecionada">
+              <div className="empresa-nao-selecionada-icon">
                 <ShieldIcon width={34} height={34} />
               </div>
               <h3>Nenhuma empresa selecionada</h3>

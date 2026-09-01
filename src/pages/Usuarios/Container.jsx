@@ -3,7 +3,7 @@ import api from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 
 export function useUsuariosContainer() {
-  const { temPermissao } = useAuth();
+  const { user, temPermissao } = useAuth();
   const podeGerenciar = temPermissao("USUARIO_GERENCIAR");
 
   const [usuarios, setUsuarios] = useState([]);
@@ -11,6 +11,8 @@ export function useUsuariosContainer() {
   const [erro, setErro] = useState("");
   const [mostrarForm, setMostrarForm] = useState(false);
   const [form, setForm] = useState({ nome: "", email: "", senha: "", perfilId: "" });
+  const [usuarioDesativar, setUsuarioDesativar] = useState(null);
+  const [desativando, setDesativando] = useState(false);
 
   async function carregar() {
     try {
@@ -51,5 +53,34 @@ export function useUsuariosContainer() {
     }
   }
 
-  return { podeGerenciar, usuarios, perfis, erro, mostrarForm, form, atualizarCampo, alternarForm, convidar };
+  async function desativar() {
+    if (!usuarioDesativar) return;
+    setDesativando(true);
+    try {
+      await api.post(`/usuarios/${usuarioDesativar.id}/desativar`);
+      setUsuarioDesativar(null);
+      carregar();
+    } catch (err) {
+      setErro(err?.response?.data?.message || "Não foi possível desativar o usuário.");
+    } finally {
+      setDesativando(false);
+    }
+  }
+
+  return {
+    usuarioLogadoId: user?.id,
+    podeGerenciar,
+    usuarios,
+    perfis,
+    erro,
+    mostrarForm,
+    form,
+    usuarioDesativar,
+    desativando,
+    atualizarCampo,
+    alternarForm,
+    convidar,
+    setUsuarioDesativar,
+    desativar,
+  };
 }

@@ -2,6 +2,48 @@
    tabela, badges e alertas). Os tokens de cor/espaçamento continuam centralizados em src/styles.css;
    aqui fica a implementação visual desses componentes de UI usados diretamente nesta página. ---------- */
 
+.alert-success {
+  background: var(--success-tint);
+  color: var(--success-600);
+  border: 1px solid #b7e3c4;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.logotipo-config {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.logotipo-preview {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius);
+  border: 1.5px dashed var(--border-strong);
+  background: var(--surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.logotipo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logotipo-acoes {
+  flex: 1;
+  min-width: 220px;
+}
+
 .page-header {
   display: flex;
   align-items: flex-end;
@@ -491,61 +533,4 @@ tbody tr:hover {
   .row-actions {
     justify-content: flex-end;
   }
-}
-
-.produto-planejado-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 8px;
-}
-
-.produto-planejado-check {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text);
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.produto-planejado-check:hover {
-  border-color: var(--primary-500);
-  background: var(--primary-tint);
-}
-
-.produto-planejado-check.ativo {
-  border-color: var(--primary-700);
-  background: var(--primary-tint);
-  color: var(--primary-900);
-  font-weight: 700;
-}
-
-.produto-planejado-check input[type="checkbox"] {
-  width: 17px;
-  height: 17px;
-  flex-shrink: 0;
-  accent-color: var(--primary-700);
-  cursor: pointer;
-}
-
-.produto-planejado-nome {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.produto-planejado-qtd {
-  width: 64px;
-  flex-shrink: 0;
-  padding: 4px 6px;
-  font-size: 0.82rem;
-  text-align: center;
 }

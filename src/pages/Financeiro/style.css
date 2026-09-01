@@ -2,6 +2,65 @@
    tabela, badges e alertas). Os tokens de cor/espaçamento continuam centralizados em src/styles.css;
    aqui fica a implementação visual desses componentes de UI usados diretamente nesta página. ---------- */
 
+.periodo-filtro {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.periodo-btn {
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  color: var(--text-muted);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.periodo-btn:hover {
+  border-color: var(--primary-500);
+}
+
+.periodo-btn.active {
+  background: var(--primary-700);
+  border-color: var(--primary-700);
+  color: #fff;
+}
+
+.periodo-personalizado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.periodo-personalizado input[type="date"] {
+  width: auto;
+  padding: 7px 10px;
+}
+
+.stat-card.ganho .stat-value {
+  color: var(--success-600);
+}
+
+.stat-card.gasto .stat-value {
+  color: var(--danger-600);
+}
+
+.stat-card.resultado-positivo .stat-value {
+  color: var(--success-600);
+}
+
+.stat-card.resultado-negativo .stat-value {
+  color: var(--danger-600);
+}
+
 .page-header {
   display: flex;
   align-items: flex-end;
@@ -491,61 +550,4 @@ tbody tr:hover {
   .row-actions {
     justify-content: flex-end;
   }
-}
-
-.produto-planejado-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 8px;
-}
-
-.produto-planejado-check {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text);
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.produto-planejado-check:hover {
-  border-color: var(--primary-500);
-  background: var(--primary-tint);
-}
-
-.produto-planejado-check.ativo {
-  border-color: var(--primary-700);
-  background: var(--primary-tint);
-  color: var(--primary-900);
-  font-weight: 700;
-}
-
-.produto-planejado-check input[type="checkbox"] {
-  width: 17px;
-  height: 17px;
-  flex-shrink: 0;
-  accent-color: var(--primary-700);
-  cursor: pointer;
-}
-
-.produto-planejado-nome {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.produto-planejado-qtd {
-  width: 64px;
-  flex-shrink: 0;
-  padding: 4px 6px;
-  font-size: 0.82rem;
-  text-align: center;
 }

@@ -114,12 +114,34 @@
   gap: 8px;
 }
 
-.calendar-expand-btn svg {
-  transition: transform 0.2s ease;
+.calendar-view-toggle {
+  display: inline-flex;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-alt);
 }
 
-.calendar-expand-btn svg.rotated {
-  transform: rotate(180deg);
+.calendar-view-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.calendar-view-btn:hover {
+  color: var(--text);
+}
+
+.calendar-view-btn.active {
+  background: var(--primary-700);
+  color: #fff;
 }
 
 .calendar-weekdays {

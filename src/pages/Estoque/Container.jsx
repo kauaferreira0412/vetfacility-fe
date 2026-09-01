@@ -6,18 +6,23 @@ const vazio = { nome: "", quantidadeEstoque: "", quantidadeMinima: "", unidade: 
 
 export function useEstoqueContainer() {
   const [produtos, setProdutos] = useState([]);
+  const [servicos, setServicos] = useState([]);
   const [erro, setErro] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
   const [editandoId, setEditandoId] = useState(null);
   const [form, setForm] = useState(vazio);
   const [produtoExcluir, setProdutoExcluir] = useState(null);
   const [excluindo, setExcluindo] = useState(false);
+  const [servicoConfigurando, setServicoConfigurando] = useState(null);
+  const [produtosPadraoSelecionados, setProdutosPadraoSelecionados] = useState({});
+  const [salvandoProdutosPadrao, setSalvandoProdutosPadrao] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   async function carregar() {
     try {
-      const { data } = await api.get("/produtos");
-      setProdutos(data);
+      const [prod, srv] = await Promise.all([api.get("/produtos"), api.get("/servicos")]);
+      setProdutos(prod.data);
+      setServicos(srv.data);
     } catch {
       setErro("Não foi possível carregar o estoque.");
     }
@@ -98,8 +103,58 @@ export function useEstoqueContainer() {
     }
   }
 
+  function abrirConfigurarProdutos(servico) {
+    const selecionados = {};
+    servico.produtosPadrao?.forEach((p) => {
+      selecionados[p.produtoId] = String(p.quantidadePadrao);
+    });
+    setProdutosPadraoSelecionados(selecionados);
+    setServicoConfigurando(servico);
+  }
+
+  function fecharConfigurarProdutos() {
+    setServicoConfigurando(null);
+  }
+
+  function alternarProdutoPadrao(produtoId) {
+    setProdutosPadraoSelecionados((atual) => {
+      const proximo = { ...atual };
+      if (proximo[produtoId] !== undefined) {
+        delete proximo[produtoId];
+      } else {
+        proximo[produtoId] = "1";
+      }
+      return proximo;
+    });
+  }
+
+  function atualizarQuantidadePadrao(produtoId, quantidade) {
+    setProdutosPadraoSelecionados((atual) => ({ ...atual, [produtoId]: quantidade }));
+  }
+
+  async function salvarProdutosPadrao(e) {
+    e.preventDefault();
+    if (!servicoConfigurando) return;
+    setSalvandoProdutosPadrao(true);
+    setErro("");
+    try {
+      const produtosPayload = Object.entries(produtosPadraoSelecionados)
+        .filter(([, quantidade]) => Number(quantidade) > 0)
+        .map(([produtoId, quantidade]) => ({ produtoId: Number(produtoId), quantidadePadrao: Number(quantidade) }));
+
+      await api.put(`/servicos/${servicoConfigurando.id}/produtos-padrao`, { produtos: produtosPayload });
+      setServicoConfigurando(null);
+      carregar();
+    } catch (err) {
+      setErro(err?.response?.data?.message || "Não foi possível salvar os produtos padrão do serviço.");
+    } finally {
+      setSalvandoProdutosPadrao(false);
+    }
+  }
+
   return {
     produtos,
+    servicos,
     erro,
     modalAberto,
     editandoId,
@@ -107,6 +162,9 @@ export function useEstoqueContainer() {
     produtoExcluir,
     excluindo,
     resumo,
+    servicoConfigurando,
+    produtosPadraoSelecionados,
+    salvandoProdutosPadrao,
     abrirNovo,
     abrirEdicao,
     fecharModal,
@@ -114,5 +172,10 @@ export function useEstoqueContainer() {
     salvar,
     remover,
     setProdutoExcluir,
+    abrirConfigurarProdutos,
+    fecharConfigurarProdutos,
+    alternarProdutoPadrao,
+    atualizarQuantidadePadrao,
+    salvarProdutosPadrao,
   };
 }

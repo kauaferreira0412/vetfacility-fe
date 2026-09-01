@@ -13,6 +13,8 @@ import Clientes from "./pages/Clientes";
 import Animais from "./pages/Animais";
 import Empresas from "./pages/Empresas";
 import Permissoes from "./pages/Permissoes";
+import Financeiro from "./pages/Financeiro";
+import Configuracoes from "./pages/Configuracoes";
 
 function HomeRedirect() {
   const { user } = useAuth();
@@ -39,6 +41,8 @@ export default function App() {
           <Route path="/clientes" element={<Clientes />} />
           <Route path="/animais" element={<Animais />} />
           <Route path="/estoque" element={<Estoque />} />
+          <Route path="/financeiro" element={<Financeiro />} />
+          <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/perfis" element={<Perfis />} />
         </Route>

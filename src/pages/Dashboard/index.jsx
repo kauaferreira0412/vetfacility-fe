@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { CalendarIcon, UsersIcon, PawIcon, BoxIcon, PlusIcon, AlertIcon } from "../../components/Icons";
+import { CalendarIcon, UsersIcon, PawIcon, BoxIcon, PlusIcon, AlertIcon, WalletIcon } from "../../components/Icons";
 import { BarChart, StatusBarList } from "../../components/Charts";
 import { useDashboardContainer, STATUS_LABEL } from "./Container";
 import "./style.css";
@@ -10,8 +10,10 @@ export default function Dashboard() {
     vePermissaoClientes,
     vePermissaoAnimais,
     vePermissaoEstoque,
+    vePermissaoFinanceiro,
     clientes,
     animais,
+    resumoFinanceiro,
     carregado,
     hojeKey,
     agendamentosHoje,
@@ -64,6 +66,22 @@ export default function Dashboard() {
           <Link to="/estoque" className={`stat-card ${produtosEstoqueBaixo.length > 0 ? "warn" : ""}`} style={{ textDecoration: "none" }}>
             <span className="stat-label">Estoque baixo</span>
             <span className="stat-value">{produtosEstoqueBaixo.length}</span>
+          </Link>
+        )}
+        {vePermissaoFinanceiro && resumoFinanceiro && (
+          <Link to="/financeiro" className="stat-card" style={{ textDecoration: "none" }}>
+            <span className="stat-label">Resultado hoje</span>
+            <span className="stat-value" style={{ color: resumoFinanceiro.resultadoHoje >= 0 ? "var(--success-600)" : "var(--danger-600)" }}>
+              {Number(resumoFinanceiro.resultadoHoje || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            </span>
+          </Link>
+        )}
+        {vePermissaoFinanceiro && resumoFinanceiro && (
+          <Link to="/financeiro" className="stat-card" style={{ textDecoration: "none" }}>
+            <span className="stat-label">Resultado do mês</span>
+            <span className="stat-value" style={{ color: resumoFinanceiro.resultadoMes >= 0 ? "var(--success-600)" : "var(--danger-600)" }}>
+              {Number(resumoFinanceiro.resultadoMes || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            </span>
           </Link>
         )}
       </div>
@@ -193,6 +211,12 @@ export default function Dashboard() {
                 <Link to="/estoque?novo=1" className="quick-link">
                   <BoxIcon width={17} height={17} />
                   Novo produto
+                </Link>
+              )}
+              {vePermissaoFinanceiro && (
+                <Link to="/financeiro" className="quick-link">
+                  <WalletIcon width={17} height={17} />
+                  Relatório financeiro
                 </Link>
               )}
             </div>

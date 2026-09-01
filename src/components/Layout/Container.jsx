@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { PawIcon, CalendarIcon, BoxIcon, ShieldIcon, UsersIcon, IdCardIcon, BuildingIcon, KeyIcon, HomeIcon } from "../Icons";
+import { PawIcon, CalendarIcon, BoxIcon, ShieldIcon, UsersIcon, IdCardIcon, BuildingIcon, KeyIcon, HomeIcon, WalletIcon, SettingsIcon } from "../Icons";
 
 function lerColapsoSalvo() {
   return localStorage.getItem("vetfacility_sidebar_collapsed") === "1";
@@ -10,7 +10,7 @@ function lerColapsoSalvo() {
 const TELAS_PLATAFORMA = ["/admin", "/empresas", "/permissoes"];
 
 export function useLayoutContainer() {
-  const { user, logout, temPermissao, empresaAtiva, precisaSelecionarEmpresa } = useAuth();
+  const { user, logout, temPermissao, empresaAtiva, minhaEmpresa, precisaSelecionarEmpresa } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const telaDePlataforma = TELAS_PLATAFORMA.includes(location.pathname);
@@ -55,13 +55,16 @@ export function useLayoutContainer() {
     temPermissao("CLIENTE_VISUALIZAR") && { to: "/clientes", icon: UsersIcon, label: "Clientes" },
     temPermissao("ANIMAL_VISUALIZAR") && { to: "/animais", icon: PawIcon, label: "Animais" },
     temPermissao("PRODUTO_VISUALIZAR") && { to: "/estoque", icon: BoxIcon, label: "Estoque" },
+    temPermissao("FINANCEIRO_VISUALIZAR") && { to: "/financeiro", icon: WalletIcon, label: "Financeiro" },
     (temPermissao("USUARIO_VISUALIZAR") || temPermissao("USUARIO_GERENCIAR")) && { to: "/usuarios", icon: IdCardIcon, label: "Usuários" },
     temPermissao("PERFIL_GERENCIAR") && { to: "/perfis", icon: ShieldIcon, label: "Perfis de acesso" },
+    temPermissao("EMPRESA_PERSONALIZAR") && { to: "/configuracoes", icon: SettingsIcon, label: "Configurações" },
   ].filter(Boolean);
 
   return {
     user,
     empresaAtiva,
+    minhaEmpresa,
     telaDePlataforma,
     bloquearPorFaltaDeEmpresa,
     menuOpen,

@@ -1,9 +1,25 @@
-import { PlusIcon, UsersIcon } from "../../components/Icons";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import { PlusIcon, UsersIcon, TrashIcon } from "../../components/Icons";
 import { useUsuariosContainer } from "./Container";
 import "./style.css";
 
 export default function Usuarios() {
-  const { podeGerenciar, usuarios, perfis, erro, mostrarForm, form, atualizarCampo, alternarForm, convidar } = useUsuariosContainer();
+  const {
+    usuarioLogadoId,
+    podeGerenciar,
+    usuarios,
+    perfis,
+    erro,
+    mostrarForm,
+    form,
+    usuarioDesativar,
+    desativando,
+    atualizarCampo,
+    alternarForm,
+    convidar,
+    setUsuarioDesativar,
+    desativar,
+  } = useUsuariosContainer();
 
   return (
     <div>
@@ -83,12 +99,14 @@ export default function Usuarios() {
                 <th>Nome</th>
                 <th>E-mail</th>
                 <th>Perfil</th>
+                <th>Status</th>
+                {podeGerenciar && <th></th>}
               </tr>
             </thead>
             <tbody>
               {usuarios.length === 0 && (
                 <tr>
-                  <td colSpan={3}>
+                  <td colSpan={podeGerenciar ? 5 : 4}>
                     <div className="empty-row">
                       <UsersIcon width={28} height={28} style={{ opacity: 0.35, marginBottom: 8 }} />
                       <div>Nenhum usuário encontrado.</div>
@@ -101,12 +119,41 @@ export default function Usuarios() {
                   <td data-label="Nome"><span className="cell-main">{u.nome}</span></td>
                   <td data-label="E-mail">{u.email}</td>
                   <td data-label="Perfil"><span className="badge agendado">{u.perfilNome}</span></td>
+                  <td data-label="Status">
+                    {u.ativo ? (
+                      <span className="badge concluido">Ativo</span>
+                    ) : (
+                      <span className="badge cancelado">Inativo</span>
+                    )}
+                  </td>
+                  {podeGerenciar && (
+                    <td data-label="Ações">
+                      {u.ativo && u.id !== usuarioLogadoId && (
+                        <div className="row-actions">
+                          <button className="btn danger sm" onClick={() => setUsuarioDesativar(u)}>
+                            <TrashIcon width={13} height={13} />
+                            Desativar
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={!!usuarioDesativar}
+        title="Desativar usuário"
+        description={usuarioDesativar ? `Tem certeza que deseja desativar "${usuarioDesativar.nome}"? O acesso dessa pessoa ao sistema é revogado imediatamente.` : ""}
+        confirmLabel="Desativar"
+        loading={desativando}
+        onConfirm={desativar}
+        onClose={() => setUsuarioDesativar(null)}
+      />
     </div>
   );
 }

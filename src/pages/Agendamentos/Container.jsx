@@ -25,6 +25,19 @@ function inicioFimMesVisivel(mesAtual) {
   return { inicio: toKey(inicio), fim: toKey(fim) };
 }
 
+export function formatarDuracao(iniciadoEm, agora) {
+  if (!iniciadoEm) return "";
+  const inicio = new Date(iniciadoEm);
+  const totalSegundos = Math.max(0, Math.floor((agora.getTime() - inicio.getTime()) / 1000));
+  const horas = Math.floor(totalSegundos / 3600);
+  const minutos = Math.floor((totalSegundos % 3600) / 60);
+  const segundos = totalSegundos % 60;
+  if (horas > 0) {
+    return `${horas}h ${String(minutos).padStart(2, "0")}min`;
+  }
+  return `${String(minutos).padStart(2, "0")}:${String(segundos).padStart(2, "0")}`;
+}
+
 const formVazio = { animalId: "", servicoId: "", usuarioId: "", hora: "09:00", observacao: "" };
 
 export function useAgendamentosContainer() {
@@ -37,24 +50,37 @@ export function useAgendamentosContainer() {
   const [animais, setAnimais] = useState([]);
   const [servicos, setServicos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [produtos, setProdutos] = useState([]);
   const [erro, setErro] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
   const [detalhe, setDetalhe] = useState(null);
   const [cancelando, setCancelando] = useState(null);
   const [motivoCancelamento, setMotivoCancelamento] = useState("");
   const [erroCancelamento, setErroCancelamento] = useState("");
+  const [iniciando, setIniciando] = useState(null);
+  const [produtosSelecionados, setProdutosSelecionados] = useState({});
+  const [agora, setAgora] = useState(() => new Date());
+  const [concluindo, setConcluindo] = useState(null);
+  const [valorCobrado, setValorCobrado] = useState("");
+  const [erroConcluir, setErroConcluir] = useState("");
 
   const [form, setForm] = useState(formVazio);
   const [searchParams, setSearchParams] = useSearchParams();
 
+  useEffect(() => {
+    const intervalo = setInterval(() => setAgora(new Date()), 1000);
+    return () => clearInterval(intervalo);
+  }, []);
+
   async function carregarTudo() {
     setErro("");
     const { inicio, fim } = inicioFimMesVisivel(mesAtual);
-    const [ag, ani, srv, usr] = await Promise.allSettled([
+    const [ag, ani, srv, usr, prod] = await Promise.allSettled([
       api.get(`/agendamentos`, { params: { de: inicio, ate: fim } }),
       api.get(`/animais`),
       api.get(`/servicos`),
       api.get(`/usuarios`),
+      api.get(`/produtos`),
     ]);
 
     if (ag.status === "fulfilled") setTodosAgendamentosDoMes(ag.value.data);
@@ -62,6 +88,7 @@ export function useAgendamentosContainer() {
     if (ani.status === "fulfilled") setAnimais(ani.value.data);
     if (srv.status === "fulfilled") setServicos(srv.value.data);
     setUsuarios(usr.status === "fulfilled" ? usr.value.data : []);
+    setProdutos(prod.status === "fulfilled" ? prod.value.data : []);
   }
 
   useEffect(() => {
@@ -155,16 +182,75 @@ export function useAgendamentosContainer() {
     }
   }
 
-  async function iniciar(id) {
-    await api.post(`/agendamentos/${id}/iniciar`);
+  function abrirIniciar(agendamento) {
+    // EST-02/EST-03: pré-preenche com os produtos padrão configurados para o tipo de serviço,
+    // que o usuário ainda pode ajustar antes de confirmar.
+    const servico = servicos.find((s) => s.id === agendamento.servicoId);
+    const selecionados = {};
+    servico?.produtosPadrao?.forEach((p) => {
+      selecionados[p.produtoId] = String(p.quantidadePadrao);
+    });
+    setProdutosSelecionados(selecionados);
+    setIniciando(agendamento);
+  }
+
+  function fecharIniciar() {
+    setIniciando(null);
+  }
+
+  function alternarProdutoSelecionado(produtoId) {
+    setProdutosSelecionados((atual) => {
+      const proximo = { ...atual };
+      if (proximo[produtoId] !== undefined) {
+        delete proximo[produtoId];
+      } else {
+        proximo[produtoId] = 1;
+      }
+      return proximo;
+    });
+  }
+
+  function atualizarQuantidadeProduto(produtoId, quantidade) {
+    setProdutosSelecionados((atual) => ({ ...atual, [produtoId]: quantidade }));
+  }
+
+  async function confirmarIniciar(e) {
+    e.preventDefault();
+    if (!iniciando) return;
+    const produtosPlanejados = Object.entries(produtosSelecionados)
+      .filter(([, quantidade]) => Number(quantidade) > 0)
+      .map(([produtoId, quantidade]) => ({ produtoId: Number(produtoId), quantidade: Number(quantidade) }));
+
+    await api.post(`/agendamentos/${iniciando.id}/iniciar`, { produtosPlanejados });
+    setIniciando(null);
     setDetalhe(null);
     carregarTudo();
   }
 
-  async function concluir(id) {
-    await api.post(`/agendamentos/${id}/concluir`, { produtosConsumidos: [] });
-    setDetalhe(null);
-    carregarTudo();
+  function abrirConcluir(agendamento) {
+    setErroConcluir("");
+    setValorCobrado("");
+    setConcluindo(agendamento);
+  }
+
+  function fecharConcluir() {
+    setConcluindo(null);
+  }
+
+  async function confirmarConcluir(e) {
+    e.preventDefault();
+    if (!concluindo) return;
+    setErroConcluir("");
+    try {
+      await api.post(`/agendamentos/${concluindo.id}/concluir`, {
+        valorCobrado: valorCobrado ? Number(valorCobrado) : null,
+      });
+      setConcluindo(null);
+      setDetalhe(null);
+      carregarTudo();
+    } catch (err) {
+      setErroConcluir(err?.response?.data?.message || "Não foi possível concluir o atendimento.");
+    }
   }
 
   function abrirCancelamento(a) {
@@ -206,6 +292,7 @@ export function useAgendamentosContainer() {
     animais,
     servicos,
     usuarios,
+    produtos,
     erro,
     modalAberto,
     detalhe,
@@ -213,6 +300,9 @@ export function useAgendamentosContainer() {
     motivoCancelamento,
     setMotivoCancelamento,
     erroCancelamento,
+    iniciando,
+    produtosSelecionados,
+    agora,
     form,
     agendamentosPorDia,
     agendamentosDoDia,
@@ -225,8 +315,18 @@ export function useAgendamentosContainer() {
     fecharModal,
     atualizarCampoForm,
     criarAgendamento,
-    iniciar,
-    concluir,
+    abrirIniciar,
+    fecharIniciar,
+    alternarProdutoSelecionado,
+    atualizarQuantidadeProduto,
+    confirmarIniciar,
+    concluindo,
+    valorCobrado,
+    setValorCobrado,
+    erroConcluir,
+    abrirConcluir,
+    fecharConcluir,
+    confirmarConcluir,
     abrirCancelamento,
     fecharCancelamento,
     confirmarCancelamento,

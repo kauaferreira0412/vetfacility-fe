@@ -16,6 +16,7 @@ export function AuthProvider({ children }) {
   });
   const [empresaAtiva, setEmpresaAtivaState] = useState(lerEmpresaAtivaSalva);
   const [empresas, setEmpresas] = useState([]);
+  const [minhaEmpresa, setMinhaEmpresa] = useState(null);
 
   function setEmpresaAtiva(empresa) {
     setEmpresaAtivaState(empresa);
@@ -34,12 +35,20 @@ export function AuthProvider({ children }) {
     return data;
   }
 
+  async function carregarMinhaEmpresa() {
+    const { data } = await api.get("/empresas/atual");
+    setMinhaEmpresa(data);
+    return data;
+  }
+
   useEffect(() => {
     if (user?.root) {
       carregarEmpresas().catch(() => {});
+    } else if (user) {
+      carregarMinhaEmpresa().catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.root]);
+  }, [user?.root, user?.id]);
 
   async function login(email, senha) {
     const { data } = await api.post("/auth/login", { email, senha });
@@ -60,6 +69,7 @@ export function AuthProvider({ children }) {
     setUser(null);
     setEmpresaAtiva(null);
     setEmpresas([]);
+    setMinhaEmpresa(null);
   }
 
   function temPermissao(codigo) {
@@ -70,9 +80,10 @@ export function AuthProvider({ children }) {
     () => ({
       token, user, isAuthenticated: !!token, login, logout, temPermissao,
       empresaAtiva, setEmpresaAtiva, empresas, carregarEmpresas,
+      minhaEmpresa, carregarMinhaEmpresa,
       precisaSelecionarEmpresa: !!user?.root && !empresaAtiva,
     }),
-    [token, user, empresaAtiva, empresas]
+    [token, user, empresaAtiva, empresas, minhaEmpresa]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

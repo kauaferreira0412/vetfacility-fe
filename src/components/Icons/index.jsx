@@ -24,6 +24,15 @@ export function CalendarIcon(props) {
   );
 }
 
+export function ClockIcon(props) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </svg>
+  );
+}
+
 export function BoxIcon(props) {
   return (
     <svg {...base(props)}>
@@ -159,6 +168,50 @@ export function KeyIcon(props) {
     <svg {...base(props)}>
       <circle cx="8" cy="15" r="4" />
       <path d="M11 12 19 4M16 7l2.5 2.5M13 10l2 2" />
+    </svg>
+  );
+}
+
+export function WalletIcon(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h12a2.5 2.5 0 0 1 2.5 2.5v9A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5v-9Z" />
+      <path d="M14.5 12h4M15.5 12a1 1 0 1 0 2 0 1 1 0 0 0-2 0Z" />
+      <path d="M3.5 9h17" />
+    </svg>
+  );
+}
+
+export function ArrowUpIcon(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 19V5M6 11l6-6 6 6" />
+    </svg>
+  );
+}
+
+export function ArrowDownIcon(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 5v14M6 13l6 6 6-6" />
+    </svg>
+  );
+}
+
+export function UploadIcon(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 16V4M7 9l5-5 5 5" />
+      <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+    </svg>
+  );
+}
+
+export function SettingsIcon(props) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="3.2" />
+      <path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V19.6a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.04H4.4a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.56-1.11 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10.5a1.7 1.7 0 0 0 1.04-1.56V4.4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1.04 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10.5a1.7 1.7 0 0 0 1.56 1.04h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.56 1.04Z" />
     </svg>
   );
 }

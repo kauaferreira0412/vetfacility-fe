@@ -535,3 +535,135 @@ tbody tr:hover {
   color: var(--text);
   font-weight: 600;
 }
+
+/* Contador de tempo em atendimento (linha da tabela) */
+
+.contador-atendimento {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--accent-600);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bloco "em atendimento" no modal de detalhe: contador grande + produtos planejados */
+
+.atendimento-em-andamento {
+  background: var(--accent-tint);
+  border: 1px solid var(--accent-500);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+
+.atendimento-em-andamento-contador {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--accent-600);
+}
+
+.atendimento-em-andamento-contador span:first-of-type {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.atendimento-em-andamento-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.atendimento-em-andamento-produtos {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--accent-500);
+}
+
+.atendimento-em-andamento-produtos-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.atendimento-em-andamento-produtos ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.atendimento-em-andamento-produtos li {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Seleção de produtos ao iniciar o atendimento (modal "Iniciar atendimento") */
+
+.produto-planejado-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.produto-planejado-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.produto-planejado-check:hover {
+  border-color: var(--primary-500);
+  background: var(--primary-tint);
+}
+
+.produto-planejado-check.ativo {
+  border-color: var(--primary-700);
+  background: var(--primary-tint);
+  color: var(--primary-900);
+  font-weight: 700;
+}
+
+.produto-planejado-check input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  accent-color: var(--primary-700);
+  cursor: pointer;
+}
+
+.produto-planejado-nome {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.produto-planejado-qtd {
+  width: 64px;
+  flex-shrink: 0;
+  padding: 4px 6px;
+  font-size: 0.82rem;
+  text-align: center;
+}

@@ -68,6 +68,13 @@
   justify-content: center;
   color: #7fe7db;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sidebar-brand .brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .sidebar-brand .brand-text {
@@ -82,6 +89,9 @@
   font-size: 1.05rem;
   color: #fff;
   line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar-brand .brand-sub {
@@ -259,28 +269,21 @@
   margin: 0 auto;
 }
 
-.empty-state {
+.empresa-nao-selecionada {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 64px 24px;
-  color: var(--text-faint);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  max-width: 480px;
-  margin: 40px auto;
-}
-
-.empty-state-lg {
   max-width: 620px;
   padding: 72px 48px;
   margin: 64px auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 }
 
-.empty-state-icon {
+.empresa-nao-selecionada-icon {
   width: 76px;
   height: 76px;
   border-radius: var(--radius-pill);
@@ -292,14 +295,14 @@
   margin-bottom: 22px;
 }
 
-.empty-state-lg h3 {
+.empresa-nao-selecionada h3 {
   font-size: 1.3rem;
   font-weight: 800;
   color: var(--text);
   margin-bottom: 10px;
 }
 
-.empty-state-lg p {
+.empresa-nao-selecionada p {
   font-size: 1rem;
   line-height: 1.6;
   color: var(--text-muted);

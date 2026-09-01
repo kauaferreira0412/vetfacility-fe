@@ -1,12 +1,13 @@
 import Modal from "../../components/Modal";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import { BoxIcon, PlusIcon, AlertIcon, TrashIcon, CheckIcon } from "../../components/Icons";
+import { BoxIcon, PlusIcon, AlertIcon, TrashIcon, CheckIcon, SettingsIcon } from "../../components/Icons";
 import { useEstoqueContainer } from "./Container";
 import "./style.css";
 
 export default function Estoque() {
   const {
     produtos,
+    servicos,
     erro,
     modalAberto,
     editandoId,
@@ -14,6 +15,9 @@ export default function Estoque() {
     produtoExcluir,
     excluindo,
     resumo,
+    servicoConfigurando,
+    produtosPadraoSelecionados,
+    salvandoProdutosPadrao,
     abrirNovo,
     abrirEdicao,
     fecharModal,
@@ -21,6 +25,11 @@ export default function Estoque() {
     salvar,
     remover,
     setProdutoExcluir,
+    abrirConfigurarProdutos,
+    fecharConfigurarProdutos,
+    alternarProdutoPadrao,
+    atualizarQuantidadePadrao,
+    salvarProdutosPadrao,
   } = useEstoqueContainer();
 
   return (
@@ -117,6 +126,57 @@ export default function Estoque() {
         </div>
       </div>
 
+      <div className="card">
+        <div className="card-head">
+          <h3>Produtos padrão por serviço</h3>
+          <span className="cell-sub">Pré-selecionados automaticamente ao iniciar um atendimento desse tipo</span>
+        </div>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Serviço</th>
+                <th>Produtos padrão</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {servicos.length === 0 && (
+                <tr>
+                  <td colSpan={3}>
+                    <div className="empty-row">Nenhum serviço cadastrado ainda.</div>
+                  </td>
+                </tr>
+              )}
+              {servicos.map((s) => (
+                <tr key={s.id}>
+                  <td data-label="Serviço"><span className="cell-main">{s.nome}</span></td>
+                  <td data-label="Produtos padrão">
+                    {s.produtosPadrao?.length > 0 ? (
+                      s.produtosPadrao.map((p) => (
+                        <span key={p.produtoId} className="cell-sub" style={{ display: "block" }}>
+                          {p.produtoNome} × {p.quantidadePadrao}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="cell-sub">Nenhum configurado</span>
+                    )}
+                  </td>
+                  <td data-label="Ações">
+                    <div className="row-actions">
+                      <button className="btn secondary sm" onClick={() => abrirConfigurarProdutos(s)}>
+                        <SettingsIcon width={13} height={13} />
+                        Configurar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <Modal
         open={modalAberto}
         onClose={fecharModal}
@@ -175,6 +235,62 @@ export default function Estoque() {
         onConfirm={remover}
         onClose={() => setProdutoExcluir(null)}
       />
+
+      <Modal
+        open={!!servicoConfigurando}
+        onClose={fecharConfigurarProdutos}
+        title="Produtos padrão do serviço"
+        subtitle={servicoConfigurando ? servicoConfigurando.nome : ""}
+      >
+        {servicoConfigurando && (
+          <form onSubmit={salvarProdutosPadrao}>
+            <p style={{ color: "var(--text-muted)", marginBottom: 16 }}>
+              Marque os produtos e a quantidade que costumam ser usados nesse tipo de serviço. Essa
+              seleção é sugerida automaticamente ao iniciar um atendimento desse tipo, mas pode
+              sempre ser ajustada na hora.
+            </p>
+
+            {produtos.length === 0 ? (
+              <p className="hint">Nenhum produto cadastrado ainda.</p>
+            ) : (
+              <div className="produto-planejado-grid">
+                {produtos.map((p) => {
+                  const selecionado = produtosPadraoSelecionados[p.id] !== undefined;
+                  return (
+                    <label key={p.id} className={`produto-planejado-check ${selecionado ? "ativo" : ""}`}>
+                      <input
+                        type="checkbox"
+                        checked={selecionado}
+                        onChange={() => alternarProdutoPadrao(p.id)}
+                      />
+                      <span className="produto-planejado-nome">{p.nome}</span>
+                      {selecionado && (
+                        <input
+                          type="number"
+                          className="produto-planejado-qtd"
+                          min="0.01"
+                          step="0.01"
+                          value={produtosPadraoSelecionados[p.id]}
+                          onClick={(e) => e.preventDefault()}
+                          onChange={(e) => atualizarQuantidadePadrao(p.id, e.target.value)}
+                        />
+                      )}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="form-footer">
+              <button type="submit" className="btn" disabled={salvandoProdutosPadrao}>
+                <CheckIcon width={16} height={16} />
+                {salvandoProdutosPadrao ? "Salvando..." : "Salvar"}
+              </button>
+              <button type="button" className="btn secondary" onClick={fecharConfigurarProdutos}>Cancelar</button>
+            </div>
+          </form>
+        )}
+      </Modal>
     </div>
   );
 }

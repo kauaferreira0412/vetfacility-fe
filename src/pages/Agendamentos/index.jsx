@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import Calendar from "../../components/Calendar";
 import Modal from "../../components/Modal";
-import { PlusIcon, CalendarIcon, CheckIcon } from "../../components/Icons";
-import { useAgendamentosContainer, STATUS_LABEL } from "./Container";
+import { PlusIcon, CalendarIcon, CheckIcon, ClockIcon } from "../../components/Icons";
+import { useAgendamentosContainer, STATUS_LABEL, formatarDuracao } from "./Container";
 import "./style.css";
 
 export default function Agendamentos() {
@@ -13,6 +13,7 @@ export default function Agendamentos() {
     animais,
     servicos,
     usuarios,
+    produtos,
     erro,
     modalAberto,
     detalhe,
@@ -20,6 +21,9 @@ export default function Agendamentos() {
     motivoCancelamento,
     setMotivoCancelamento,
     erroCancelamento,
+    iniciando,
+    produtosSelecionados,
+    agora,
     form,
     agendamentosPorDia,
     agendamentosDoDia,
@@ -32,8 +36,18 @@ export default function Agendamentos() {
     fecharModal,
     atualizarCampoForm,
     criarAgendamento,
-    iniciar,
-    concluir,
+    abrirIniciar,
+    fecharIniciar,
+    alternarProdutoSelecionado,
+    atualizarQuantidadeProduto,
+    confirmarIniciar,
+    concluindo,
+    valorCobrado,
+    setValorCobrado,
+    erroConcluir,
+    abrirConcluir,
+    fecharConcluir,
+    confirmarConcluir,
     abrirCancelamento,
     fecharCancelamento,
     confirmarCancelamento,
@@ -129,14 +143,20 @@ export default function Agendamentos() {
                   <td data-label="Executor">{a.usuarioNome}</td>
                   <td data-label="Status">
                     <span className={`badge ${a.status.toLowerCase()}`}>{STATUS_LABEL[a.status]}</span>
+                    {a.status === "EM_ATENDIMENTO" && (
+                      <div className="contador-atendimento">
+                        <ClockIcon width={12} height={12} />
+                        {formatarDuracao(a.iniciadoEm, agora)}
+                      </div>
+                    )}
                   </td>
                   <td data-label="Ações">
                     {(a.status === "AGENDADO" || a.status === "EM_ATENDIMENTO") && (
                       <div className="row-actions" onClick={(e) => e.stopPropagation()}>
                         {a.status === "AGENDADO" && (
-                          <button className="btn secondary sm" onClick={() => iniciar(a.id)}>Iniciar</button>
+                          <button className="btn secondary sm" onClick={() => abrirIniciar(a)}>Iniciar</button>
                         )}
-                        <button className="btn sm" onClick={() => concluir(a.id)}>Concluir</button>
+                        <button className="btn sm" onClick={() => abrirConcluir(a)}>Concluir</button>
                         <button className="btn secondary sm" onClick={() => abrirCancelamento(a)}>Cancelar</button>
                       </div>
                     )}
@@ -247,6 +267,26 @@ export default function Agendamentos() {
               <span className={`badge ${detalhe.status.toLowerCase()}`}>{STATUS_LABEL[detalhe.status]}</span>
             </div>
 
+            {detalhe.status === "EM_ATENDIMENTO" && (
+              <div className="atendimento-em-andamento">
+                <div className="atendimento-em-andamento-contador">
+                  <ClockIcon width={18} height={18} />
+                  <span>{formatarDuracao(detalhe.iniciadoEm, agora)}</span>
+                  <span className="atendimento-em-andamento-label">em atendimento</span>
+                </div>
+                {detalhe.produtosPlanejados?.length > 0 && (
+                  <div className="atendimento-em-andamento-produtos">
+                    <div className="atendimento-em-andamento-produtos-title">Produtos que serão usados</div>
+                    <ul>
+                      {detalhe.produtosPlanejados.map((p) => (
+                        <li key={p.produtoId}>{p.produtoNome} <span className="cell-sub">× {p.quantidade}</span></li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
             <dl className="detalhe-lista">
               <div>
                 <dt>Cliente</dt>
@@ -277,9 +317,9 @@ export default function Agendamentos() {
             {(detalhe.status === "AGENDADO" || detalhe.status === "EM_ATENDIMENTO") && (
               <div className="form-footer">
                 {detalhe.status === "AGENDADO" && (
-                  <button className="btn secondary" onClick={() => iniciar(detalhe.id)}>Iniciar atendimento</button>
+                  <button className="btn secondary" onClick={() => abrirIniciar(detalhe)}>Iniciar atendimento</button>
                 )}
-                <button className="btn" onClick={() => concluir(detalhe.id)}>
+                <button className="btn" onClick={() => abrirConcluir(detalhe)}>
                   <CheckIcon width={16} height={16} />
                   Concluir atendimento
                 </button>
@@ -287,6 +327,61 @@ export default function Agendamentos() {
               </div>
             )}
           </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={!!iniciando}
+        onClose={fecharIniciar}
+        title="Iniciar atendimento"
+        subtitle={iniciando ? `${iniciando.animalNome} · ${new Date(iniciando.dataHora).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}` : ""}
+      >
+        {iniciando && (
+          <form onSubmit={confirmarIniciar}>
+            <p style={{ color: "var(--text-muted)", marginBottom: 16 }}>
+              Marque os produtos que serão usados neste atendimento. O contador de tempo começa assim que
+              você confirmar. Isso é só uma sinalização - a baixa no estoque acontece de fato ao concluir.
+            </p>
+
+            {produtos.length === 0 ? (
+              <p className="hint">Nenhum produto cadastrado ainda. Você pode iniciar sem selecionar nenhum.</p>
+            ) : (
+              <div className="produto-planejado-grid">
+                {produtos.map((p) => {
+                  const selecionado = produtosSelecionados[p.id] !== undefined;
+                  return (
+                    <label key={p.id} className={`produto-planejado-check ${selecionado ? "ativo" : ""}`}>
+                      <input
+                        type="checkbox"
+                        checked={selecionado}
+                        onChange={() => alternarProdutoSelecionado(p.id)}
+                      />
+                      <span className="produto-planejado-nome">{p.nome}</span>
+                      {selecionado && (
+                        <input
+                          type="number"
+                          className="produto-planejado-qtd"
+                          min="0.01"
+                          step="0.01"
+                          value={produtosSelecionados[p.id]}
+                          onClick={(e) => e.preventDefault()}
+                          onChange={(e) => atualizarQuantidadeProduto(p.id, e.target.value)}
+                        />
+                      )}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="form-footer">
+              <button type="submit" className="btn">
+                <ClockIcon width={16} height={16} />
+                Iniciar atendimento
+              </button>
+              <button type="button" className="btn secondary" onClick={fecharIniciar}>Cancelar</button>
+            </div>
+          </form>
         )}
       </Modal>
 
@@ -320,6 +415,44 @@ export default function Agendamentos() {
             <div className="form-footer">
               <button type="submit" className="btn danger">Confirmar cancelamento</button>
               <button type="button" className="btn secondary" onClick={fecharCancelamento}>Voltar</button>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+      <Modal
+        open={!!concluindo}
+        onClose={fecharConcluir}
+        title="Concluir atendimento"
+        subtitle={concluindo ? `${concluindo.animalNome} · ${concluindo.servicoNome}` : ""}
+      >
+        {concluindo && (
+          <form onSubmit={confirmarConcluir}>
+            <p style={{ color: "var(--text-muted)", marginBottom: 16 }}>
+              Informe o valor cobrado pelo atendimento para registrar automaticamente o ganho no financeiro.
+              Deixe em branco se preferir lançar depois.
+            </p>
+            <div className="field">
+              <label>Valor cobrado (opcional)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={valorCobrado}
+                onChange={(e) => setValorCobrado(e.target.value)}
+                placeholder="Ex.: 80.00"
+                autoFocus
+              />
+            </div>
+
+            {erroConcluir && <div className="alert-error">{erroConcluir}</div>}
+
+            <div className="form-footer">
+              <button type="submit" className="btn">
+                <CheckIcon width={16} height={16} />
+                Concluir atendimento
+              </button>
+              <button type="button" className="btn secondary" onClick={fecharConcluir}>Cancelar</button>
             </div>
           </form>
         )}

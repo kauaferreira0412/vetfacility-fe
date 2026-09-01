@@ -24,12 +24,14 @@ export function useDashboardContainer() {
   const [clientes, setClientes] = useState([]);
   const [animais, setAnimais] = useState([]);
   const [produtos, setProdutos] = useState([]);
+  const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
   const [carregado, setCarregado] = useState(false);
 
   const vePermissaoAgenda = temPermissao("AGENDAMENTO_VISUALIZAR");
   const vePermissaoClientes = temPermissao("CLIENTE_VISUALIZAR");
   const vePermissaoAnimais = temPermissao("ANIMAL_VISUALIZAR");
   const vePermissaoEstoque = temPermissao("PRODUTO_VISUALIZAR");
+  const vePermissaoFinanceiro = temPermissao("FINANCEIRO_VISUALIZAR");
 
   useEffect(() => {
     async function carregar() {
@@ -41,17 +43,19 @@ export function useDashboardContainer() {
       ateDate.setDate(ateDate.getDate() + 6);
       const ate = toKey(ateDate);
 
-      const [ag, cli, ani, prod] = await Promise.allSettled([
+      const [ag, cli, ani, prod, fin] = await Promise.allSettled([
         vePermissaoAgenda ? api.get("/agendamentos", { params: { de, ate } }) : Promise.resolve({ data: [] }),
         vePermissaoClientes ? api.get("/clientes") : Promise.resolve({ data: [] }),
         vePermissaoAnimais ? api.get("/animais") : Promise.resolve({ data: [] }),
         vePermissaoEstoque ? api.get("/produtos") : Promise.resolve({ data: [] }),
+        vePermissaoFinanceiro ? api.get("/financeiro/resumo") : Promise.resolve({ data: null }),
       ]);
 
       if (ag.status === "fulfilled") setAgendamentos(ag.value.data);
       if (cli.status === "fulfilled") setClientes(cli.value.data);
       if (ani.status === "fulfilled") setAnimais(ani.value.data);
       if (prod.status === "fulfilled") setProdutos(prod.value.data);
+      if (fin.status === "fulfilled") setResumoFinanceiro(fin.value.data);
       setCarregado(true);
     }
     carregar();
@@ -108,8 +112,10 @@ export function useDashboardContainer() {
     vePermissaoClientes,
     vePermissaoAnimais,
     vePermissaoEstoque,
+    vePermissaoFinanceiro,
     clientes,
     animais,
+    resumoFinanceiro,
     carregado,
     hojeKey,
     agendamentosHoje,
