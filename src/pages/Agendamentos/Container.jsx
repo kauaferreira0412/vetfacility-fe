@@ -63,6 +63,10 @@ export function useAgendamentosContainer() {
   const [concluindo, setConcluindo] = useState(null);
   const [valorCobrado, setValorCobrado] = useState("");
   const [erroConcluir, setErroConcluir] = useState("");
+  const [relatorioAberto, setRelatorioAberto] = useState(false);
+  const [periodoRelatorio, setPeriodoRelatorio] = useState({ de: "", ate: "" });
+  const [baixandoRelatorio, setBaixandoRelatorio] = useState(false);
+  const [erroRelatorio, setErroRelatorio] = useState("");
 
   const [form, setForm] = useState(formVazio);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -253,6 +257,45 @@ export function useAgendamentosContainer() {
     }
   }
 
+  function abrirRelatorio() {
+    setErroRelatorio("");
+    setPeriodoRelatorio({ de: toKey(new Date(mesAtual.getFullYear(), mesAtual.getMonth(), 1)), ate: toKey(new Date()) });
+    setRelatorioAberto(true);
+  }
+
+  function fecharRelatorio() {
+    setRelatorioAberto(false);
+  }
+
+  function atualizarPeriodoRelatorio(campo, valor) {
+    setPeriodoRelatorio((p) => ({ ...p, [campo]: valor }));
+  }
+
+  async function baixarRelatorioPdf(e) {
+    e.preventDefault();
+    setErroRelatorio("");
+    setBaixandoRelatorio(true);
+    try {
+      const { data } = await api.get("/agendamentos/relatorio-pdf", {
+        params: { de: periodoRelatorio.de, ate: periodoRelatorio.ate },
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `relatorio-atendimentos-${periodoRelatorio.de}-a-${periodoRelatorio.ate}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setRelatorioAberto(false);
+    } catch {
+      setErroRelatorio("Não foi possível gerar o PDF do relatório.");
+    } finally {
+      setBaixandoRelatorio(false);
+    }
+  }
+
   function abrirCancelamento(a) {
     setErroCancelamento("");
     setMotivoCancelamento("");
@@ -333,5 +376,13 @@ export function useAgendamentosContainer() {
     dataFormatada,
     dataFormatadaCurta,
     setDetalhe,
+    relatorioAberto,
+    periodoRelatorio,
+    baixandoRelatorio,
+    erroRelatorio,
+    abrirRelatorio,
+    fecharRelatorio,
+    atualizarPeriodoRelatorio,
+    baixarRelatorioPdf,
   };
 }

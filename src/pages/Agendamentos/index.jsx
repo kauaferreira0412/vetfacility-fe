@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import Calendar from "../../components/Calendar";
 import Modal from "../../components/Modal";
-import { PlusIcon, CalendarIcon, CheckIcon, ClockIcon } from "../../components/Icons";
+import DateField from "../../components/DateField";
+import { PlusIcon, CalendarIcon, CheckIcon, ClockIcon, DownloadIcon } from "../../components/Icons";
 import { useAgendamentosContainer, STATUS_LABEL, formatarDuracao } from "./Container";
 import "./style.css";
 
@@ -54,6 +55,14 @@ export default function Agendamentos() {
     dataFormatada,
     dataFormatadaCurta,
     setDetalhe,
+    relatorioAberto,
+    periodoRelatorio,
+    baixandoRelatorio,
+    erroRelatorio,
+    abrirRelatorio,
+    fecharRelatorio,
+    atualizarPeriodoRelatorio,
+    baixarRelatorioPdf,
   } = useAgendamentosContainer();
 
   return (
@@ -65,6 +74,10 @@ export default function Agendamentos() {
           <div className="subtitle" style={{ textTransform: "capitalize" }}>{dataFormatada}</div>
         </div>
         <div className="page-actions">
+          <button className="btn secondary" onClick={abrirRelatorio}>
+            <DownloadIcon width={16} height={16} />
+            Relatório de atendimentos
+          </button>
           <button className="btn" onClick={abrirModal}>
             <PlusIcon width={16} height={16} />
             Novo agendamento
@@ -456,6 +469,38 @@ export default function Agendamentos() {
             </div>
           </form>
         )}
+      </Modal>
+
+      <Modal
+        open={relatorioAberto}
+        onClose={fecharRelatorio}
+        title="Relatório de atendimentos"
+        subtitle="Baixa em PDF os banhos e tosas concluídos no período escolhido."
+      >
+        <form onSubmit={baixarRelatorioPdf}>
+          <div className="form-section">
+            <div className="form-grid">
+              <div className="field">
+                <label>De</label>
+                <DateField value={periodoRelatorio.de} onChange={(e) => atualizarPeriodoRelatorio("de", e.target.value)} required />
+              </div>
+              <div className="field">
+                <label>Até</label>
+                <DateField value={periodoRelatorio.ate} onChange={(e) => atualizarPeriodoRelatorio("ate", e.target.value)} required />
+              </div>
+            </div>
+          </div>
+
+          {erroRelatorio && <div className="alert-error">{erroRelatorio}</div>}
+
+          <div className="form-footer">
+            <button type="submit" className="btn" disabled={baixandoRelatorio}>
+              <DownloadIcon width={16} height={16} />
+              {baixandoRelatorio ? "Gerando PDF..." : "Baixar PDF"}
+            </button>
+            <button type="button" className="btn secondary" onClick={fecharRelatorio}>Cancelar</button>
+          </div>
+        </form>
       </Modal>
     </div>
   );
