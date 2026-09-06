@@ -1,6 +1,6 @@
 import Modal from "../../components/Modal";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import { WalletIcon, PlusIcon, TrashIcon, CheckIcon, ArrowUpIcon, ArrowDownIcon } from "../../components/Icons";
+import { WalletIcon, PlusIcon, TrashIcon, CheckIcon, ArrowUpIcon, ArrowDownIcon, DownloadIcon } from "../../components/Icons";
 import { useFinanceiroContainer } from "./Container";
 import "./style.css";
 
@@ -29,17 +29,21 @@ export default function Financeiro() {
     carregando,
     erro,
     modalAberto,
+    tipoLancamento,
     form,
     movimentacaoExcluir,
     excluindo,
+    baixandoPdf,
     selecionarPreset,
     atualizarPeriodoPersonalizado,
     abrirNovoGasto,
+    abrirNovoGanho,
     fecharModal,
     atualizarCampo,
-    salvarGasto,
+    salvarLancamento,
     remover,
     setMovimentacaoExcluir,
+    baixarRelatorioPdf,
   } = useFinanceiroContainer();
 
   const resultadoPositivo = Number(resultado.resultado) >= 0;
@@ -52,14 +56,24 @@ export default function Financeiro() {
           <h2>Financeiro</h2>
           <div className="subtitle">Acompanhe os ganhos e gastos do negócio e o resultado do período.</div>
         </div>
-        {podeGerenciar && (
-          <div className="page-actions">
-            <button className="btn" onClick={abrirNovoGasto}>
-              <PlusIcon width={16} height={16} />
-              Lançar gasto
-            </button>
-          </div>
-        )}
+        <div className="page-actions">
+          <button className="btn secondary" onClick={baixarRelatorioPdf} disabled={baixandoPdf}>
+            <DownloadIcon width={16} height={16} />
+            {baixandoPdf ? "Gerando PDF..." : "Baixar PDF"}
+          </button>
+          {podeGerenciar && (
+            <>
+              <button className="btn secondary" onClick={abrirNovoGanho}>
+                <PlusIcon width={16} height={16} />
+                Lançar receita
+              </button>
+              <button className="btn" onClick={abrirNovoGasto}>
+                <PlusIcon width={16} height={16} />
+                Lançar gasto
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="periodo-filtro">
@@ -166,16 +180,18 @@ export default function Financeiro() {
       <Modal
         open={modalAberto}
         onClose={fecharModal}
-        title="Lançar gasto"
-        subtitle="Registre um gasto do negócio, mesmo sem estar vinculado a um atendimento."
+        title={tipoLancamento === "GANHO" ? "Lançar receita" : "Lançar gasto"}
+        subtitle={tipoLancamento === "GANHO"
+          ? "Registre um ganho do negócio, mesmo sem estar vinculado a um atendimento."
+          : "Registre um gasto do negócio, mesmo sem estar vinculado a um atendimento."}
       >
-        <form onSubmit={salvarGasto}>
+        <form onSubmit={salvarLancamento}>
           <div className="form-section">
             <div className="form-grid">
               <div className="field span-2">
                 <label>Descrição</label>
                 <input value={form.descricao} onChange={(e) => atualizarCampo("descricao", e.target.value)}
-                       placeholder="Ex.: Compra de shampoo" maxLength={200} />
+                       placeholder={tipoLancamento === "GANHO" ? "Ex.: Venda de produto avulso" : "Ex.: Compra de shampoo"} maxLength={200} />
               </div>
               <div className="field">
                 <label>Valor</label>
@@ -192,7 +208,7 @@ export default function Financeiro() {
           <div className="form-footer">
             <button type="submit" className="btn">
               <CheckIcon width={16} height={16} />
-              Lançar gasto
+              {tipoLancamento === "GANHO" ? "Lançar receita" : "Lançar gasto"}
             </button>
             <button type="button" className="btn secondary" onClick={fecharModal}>Cancelar</button>
           </div>

@@ -32,9 +32,11 @@ export function useFinanceiroContainer() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
+  const [tipoLancamento, setTipoLancamento] = useState("GASTO");
   const [form, setForm] = useState(vazio);
   const [movimentacaoExcluir, setMovimentacaoExcluir] = useState(null);
   const [excluindo, setExcluindo] = useState(false);
+  const [baixandoPdf, setBaixandoPdf] = useState(false);
 
   const carregar = useCallback(async () => {
     setCarregando(true);
@@ -65,6 +67,13 @@ export function useFinanceiroContainer() {
   }
 
   function abrirNovoGasto() {
+    setTipoLancamento("GASTO");
+    setForm(vazio);
+    setModalAberto(true);
+  }
+
+  function abrirNovoGanho() {
+    setTipoLancamento("GANHO");
     setForm(vazio);
     setModalAberto(true);
   }
@@ -77,15 +86,17 @@ export function useFinanceiroContainer() {
     setForm((f) => ({ ...f, [campo]: valor }));
   }
 
-  async function salvarGasto(e) {
+  async function salvarLancamento(e) {
     e.preventDefault();
     setErro("");
     try {
-      await api.post("/financeiro/gastos", { ...form, valor: Number(form.valor) });
+      const rota = tipoLancamento === "GANHO" ? "/financeiro/ganhos" : "/financeiro/gastos";
+      await api.post(rota, { ...form, valor: Number(form.valor) });
       setModalAberto(false);
       carregar();
     } catch (err) {
-      setErro(err?.response?.data?.message || "Não foi possível lançar o gasto.");
+      const acao = tipoLancamento === "GANHO" ? "lançar o ganho" : "lançar o gasto";
+      setErro(err?.response?.data?.message || `Não foi possível ${acao}.`);
     }
   }
 
@@ -103,6 +114,29 @@ export function useFinanceiroContainer() {
     }
   }
 
+  async function baixarRelatorioPdf() {
+    setErro("");
+    setBaixandoPdf(true);
+    try {
+      const { data } = await api.get("/financeiro/relatorio-pdf", {
+        params: { de: periodo.de, ate: periodo.ate },
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `relatorio-financeiro-${periodo.de}-a-${periodo.ate}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      setErro("Não foi possível gerar o PDF do relatório.");
+    } finally {
+      setBaixandoPdf(false);
+    }
+  }
+
   return {
     podeGerenciar,
     preset,
@@ -111,16 +145,20 @@ export function useFinanceiroContainer() {
     carregando,
     erro,
     modalAberto,
+    tipoLancamento,
     form,
     movimentacaoExcluir,
     excluindo,
+    baixandoPdf,
     selecionarPreset,
     atualizarPeriodoPersonalizado,
     abrirNovoGasto,
+    abrirNovoGanho,
     fecharModal,
     atualizarCampo,
-    salvarGasto,
+    salvarLancamento,
     remover,
     setMovimentacaoExcluir,
+    baixarRelatorioPdf,
   };
 }
