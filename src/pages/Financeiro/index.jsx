@@ -1,5 +1,6 @@
 import Modal from "../../components/Modal";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import DateField from "../../components/DateField";
 import { WalletIcon, PlusIcon, TrashIcon, CheckIcon, ArrowUpIcon, ArrowDownIcon, DownloadIcon } from "../../components/Icons";
 import { useFinanceiroContainer } from "./Container";
 import "./style.css";
@@ -89,9 +90,9 @@ export default function Financeiro() {
         ))}
         {preset === "personalizado" && (
           <div className="periodo-personalizado">
-            <input type="date" value={periodo.de} onChange={(e) => atualizarPeriodoPersonalizado("de", e.target.value)} />
+            <DateField className="sm" value={periodo.de} onChange={(e) => atualizarPeriodoPersonalizado("de", e.target.value)} />
             <span>até</span>
-            <input type="date" value={periodo.ate} onChange={(e) => atualizarPeriodoPersonalizado("ate", e.target.value)} />
+            <DateField className="sm" value={periodo.ate} onChange={(e) => atualizarPeriodoPersonalizado("ate", e.target.value)} />
           </div>
         )}
       </div>
@@ -200,7 +201,7 @@ export default function Financeiro() {
               </div>
               <div className="field">
                 <label>Data</label>
-                <input type="date" value={form.data} onChange={(e) => atualizarCampo("data", e.target.value)} required />
+                <DateField value={form.data} onChange={(e) => atualizarCampo("data", e.target.value)} required />
               </div>
             </div>
           </div>

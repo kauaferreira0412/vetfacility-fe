@@ -1,0 +1,65 @@
+.date-field {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.date-field-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary-600);
+  pointer-events: none;
+}
+
+.date-field input[type="date"] {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  color-scheme: light;
+}
+
+.date-field input[type="date"]:hover {
+  border-color: var(--primary-500);
+  background: var(--primary-tint);
+}
+
+.date-field input[type="date"]:focus {
+  outline: none;
+  border-color: var(--primary-600);
+  box-shadow: 0 0 0 3px var(--primary-tint);
+  background: var(--surface);
+}
+
+.date-field input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Variante compacta, para filtros inline (ex.: período personalizado). */
+.date-field.sm {
+  width: auto;
+}
+
+.date-field.sm input[type="date"] {
+  width: auto;
+  padding: 7px 10px 7px 32px;
+  font-size: 0.84rem;
+}
+
+.date-field.sm .date-field-icon {
+  left: 10px;
+}

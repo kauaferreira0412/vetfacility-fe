@@ -40,11 +40,6 @@
   color: var(--text-muted);
 }
 
-.periodo-personalizado input[type="date"] {
-  width: auto;
-  padding: 7px 10px;
-}
-
 .stat-card.ganho .stat-value {
   color: var(--success-600);
 }

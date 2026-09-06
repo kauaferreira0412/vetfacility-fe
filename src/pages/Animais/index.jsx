@@ -1,4 +1,5 @@
 import Modal from "../../components/Modal";
+import DateField from "../../components/DateField";
 import { PlusIcon, PawIcon, TrashIcon, CheckIcon } from "../../components/Icons";
 import { useAnimaisContainer } from "./Container";
 import "./style.css";
@@ -142,7 +143,7 @@ export default function Animais() {
               </div>
               <div className="field">
                 <label>Data de nascimento</label>
-                <input type="date" value={form.dataNascimento} onChange={(e) => atualizarCampo("dataNascimento", e.target.value)} />
+                <DateField value={form.dataNascimento} onChange={(e) => atualizarCampo("dataNascimento", e.target.value)} />
               </div>
               <div className="field">
                 <label>Peso (kg)</label>
