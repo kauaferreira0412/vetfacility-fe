@@ -201,7 +201,7 @@ export default function Financeiro() {
               </div>
               <div className="field">
                 <label>Data</label>
-                <DateField value={form.data} onChange={(e) => atualizarCampo("data", e.target.value)} required />
+                <DateField value={form.data} onChange={(e) => atualizarCampo("data", e.target.value)} />
               </div>
             </div>
           </div>

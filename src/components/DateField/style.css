@@ -1,21 +1,15 @@
 .date-field {
   position: relative;
   display: inline-flex;
-  align-items: center;
-}
-
-.date-field-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--primary-600);
-  pointer-events: none;
-}
-
-.date-field input[type="date"] {
   width: 100%;
-  padding: 10px 12px 10px 36px;
+}
+
+.date-field-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
   border: 1.5px solid var(--border-strong);
   border-radius: var(--radius-sm);
   background: var(--surface);
@@ -24,29 +18,39 @@
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
+  text-align: left;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-  color-scheme: light;
 }
 
-.date-field input[type="date"]:hover {
+.date-field-trigger:hover {
   border-color: var(--primary-500);
-  background: var(--primary-tint);
 }
 
-.date-field input[type="date"]:focus {
+.date-field-trigger:focus-visible {
   outline: none;
   border-color: var(--primary-600);
   box-shadow: 0 0 0 3px var(--primary-tint);
-  background: var(--surface);
 }
 
-.date-field input[type="date"]::-webkit-calendar-picker-indicator {
-  position: absolute;
-  right: 8px;
-  width: 20px;
-  height: 20px;
-  opacity: 0;
-  cursor: pointer;
+.date-field-trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.date-field-icon {
+  color: var(--primary-600);
+  flex-shrink: 0;
+}
+
+.date-field-valor {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date-field-valor.vazio {
+  color: var(--text-faint);
+  font-weight: 500;
 }
 
 /* Variante compacta, para filtros inline (ex.: período personalizado). */
@@ -54,12 +58,158 @@
   width: auto;
 }
 
-.date-field.sm input[type="date"] {
+.date-field.sm .date-field-trigger {
   width: auto;
-  padding: 7px 10px 7px 32px;
+  padding: 7px 10px;
   font-size: 0.84rem;
 }
 
-.date-field.sm .date-field-icon {
-  left: 10px;
+/* Painel do calendário (renderizado via portal em document.body). */
+.date-field-painel {
+  position: fixed;
+  z-index: 200;
+  width: 280px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 14px;
+  animation: date-field-pop-in 0.12s ease;
+}
+
+@keyframes date-field-pop-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.date-field-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.date-field-titulo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: var(--primary-900);
+  text-transform: capitalize;
+}
+
+.date-field-nav {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  color: var(--primary-800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background 0.15s ease;
+}
+
+.date-field-nav:hover {
+  background: var(--primary-tint);
+}
+
+.date-field-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.date-field-semana span {
+  text-align: center;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.date-field-grade {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.date-field-linha {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.date-field-dia {
+  width: 100%;
+  aspect-ratio: 1;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.date-field-dia:hover {
+  background: var(--primary-tint);
+}
+
+.date-field-dia.fora {
+  color: var(--text-faint);
+  opacity: 0.5;
+}
+
+.date-field-dia.hoje {
+  color: var(--primary-700);
+  box-shadow: inset 0 0 0 1.5px var(--primary-500);
+}
+
+.date-field-dia.selecionado {
+  background: var(--primary-700);
+  color: #fff;
+}
+
+.date-field-dia.selecionado.hoje {
+  box-shadow: none;
+}
+
+.date-field-rodape {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.date-field-limpar,
+.date-field-hoje {
+  border: none;
+  background: transparent;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.date-field-limpar {
+  color: var(--text-muted);
+}
+
+.date-field-limpar:hover {
+  color: var(--danger-600);
+}
+
+.date-field-hoje {
+  color: var(--primary-700);
+}
+
+.date-field-hoje:hover {
+  text-decoration: underline;
 }
