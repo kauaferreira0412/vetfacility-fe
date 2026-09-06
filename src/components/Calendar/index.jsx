@@ -14,13 +14,13 @@ export default function Calendar({
     <div className="calendar-card">
       <div className="calendar-toolbar">
         <div className="calendar-nav">
-          <button className="icon-btn cal-nav-btn" onClick={() => onMudarMes(-1)} aria-label="Mês anterior">
+          <button className="cal-nav-btn" onClick={() => onMudarMes(-1)} aria-label="Mês anterior">
             <ChevronLeftIcon width={17} height={17} />
           </button>
           <div className="calendar-title">
             {MESES[mesAtual.getMonth()]} <span>{mesAtual.getFullYear()}</span>
           </div>
-          <button className="icon-btn cal-nav-btn" onClick={() => onMudarMes(1)} aria-label="Próximo mês">
+          <button className="cal-nav-btn" onClick={() => onMudarMes(1)} aria-label="Próximo mês">
             <ChevronRightIcon width={17} height={17} />
           </button>
         </div>
